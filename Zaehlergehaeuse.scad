@@ -21,8 +21,25 @@ alu_dicke      =   1.0;
 seite_unten_d  =   5.0;
 seite_unten_h  =   6.0;
 seite_unten_t  =  75.0;
-stub_tiefe     =  70.0;
+stub_tiefe     =  75.0;
 stub_hoehe     =  seite_unten_h - 2.0;
+
+phasen_ende    =   1.2;
+
+l1_x           =   3.0;
+l1_y           =   3.7;
+
+l2_x           = 107.8;
+l2_y           =   3.7;
+
+l3_x           =   2.2;
+l3_y           =  68.8;
+
+l4_x           = 107.8;
+l4_y           =  67.8;
+
+loch_d         =   4.0;
+schrauben_d    =   7.0;
 
 module lattenarray(breite, tiefe, hoehe, n_latten) {
     dx = breite / (2 * n_latten - 1);
@@ -119,8 +136,10 @@ module seitenwand_unten_links() {
                   seite_unten_h + fuss_hoehe + 
                   alu_dicke]);
         ;
-        translate([-blechdicke, -delta, seite_unten_h])
-            phasenstange_y(tiefe_aussen + 2*delta);
+        translate([-blechdicke, phasen_ende,
+                   seite_unten_h])
+            phasenstange_y(tiefe_aussen - 
+                           2 * phasen_ende);
     }
 }
 
@@ -135,15 +154,60 @@ module seitenwand_unten_rechts() {
                   seite_unten_h + fuss_hoehe + 
                   alu_dicke]);
         ;
-        translate([breite_innen, -delta, seite_unten_h])
-            phasenstange_y(tiefe_aussen + 2*delta);
+        translate([breite_innen, phasen_ende,
+                   seite_unten_h])
+            phasenstange_y(tiefe_aussen - 
+                           2 * phasen_ende);
     }
 }
 
-module unterteil() {
-    rueckwand();
-    seitenwand_unten_links();
-    seitenwand_unten_rechts();
+
+module loch(x, y) {
+    translate([x,
+               y + blechdicke,
+               -fuss_hoehe - blechdicke - delta]) 
+    {
+        cylinder(h = hoehe_innen + fuss_hoehe +
+                    blechdicke + 2*delta, 
+                 d = loch_d);
+        cylinder(h = blechdicke + 2*delta,
+                 d = schrauben_d);
+    }
 }
 
-unterteil();
+module loecher() {
+    loch(l1_x, l1_y);
+    loch(l2_x, l2_y);
+    loch(l3_x, l3_y);
+    loch(l4_x, l4_y);
+}
+
+module boden() {
+    translate([-blechdicke, 0, -fuss_hoehe -blechdicke])
+        cube([breite_innen + 2 * blechdicke,
+              tiefe_aussen, blechdicke + delta]);
+}
+
+module unterteil() {
+    difference() {
+        union() {
+            rueckwand();
+            seitenwand_unten_links();
+            seitenwand_unten_rechts();
+            boden();
+        }
+        ;
+        loecher();
+    }
+}
+
+module print_unten() {
+    translate([blechdicke + breite_innen, 
+               fuss_hoehe + blechdicke, 0])
+        rotate([90, 0, 180])
+            unterteil();
+}
+
+//unterteil();
+print_unten();
+
