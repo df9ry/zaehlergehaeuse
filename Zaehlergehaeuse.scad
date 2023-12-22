@@ -163,16 +163,13 @@ module seitenwand_unten_rechts() {
 
 
 module loch(x, y) {
-    translate([x,
-               y + blechdicke,
-               -fuss_hoehe - blechdicke - delta]) 
-    {
-        cylinder(h = hoehe_innen + fuss_hoehe +
-                    blechdicke + 2*delta, 
+    translate([x, y + blechdicke, - delta]) 
+        cylinder(h = hoehe_innen + 2*delta, 
                  d = loch_d);
-        cylinder(h = blechdicke + 2*delta,
+    translate([x, y + blechdicke, 
+               - fuss_hoehe - blechdicke - delta]) 
+        cylinder(h = blechdicke + stub_hoehe,
                  d = schrauben_d);
-    }
 }
 
 module loecher() {
@@ -183,7 +180,9 @@ module loecher() {
 }
 
 module boden() {
-    translate([-blechdicke, 0, -fuss_hoehe -blechdicke])
+    translate([-blechdicke - delta, 
+               0, 
+               -fuss_hoehe - blechdicke])
         cube([breite_innen + 2 * blechdicke,
               tiefe_aussen, blechdicke + delta]);
 }
