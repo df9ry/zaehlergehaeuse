@@ -8,6 +8,7 @@ breite_innen   = 110.0;
 hoehe_innen    =  26.0;
 
 tiefe_aussen   =  83.0;
+tiefe_innen    =  tiefe_aussen - blechdicke;
 
 fuss_hoehe     =   3.0;
 
@@ -174,8 +175,8 @@ module loch(x, y) {
 }
 
 module schraubenhalterung() {
-    cube([schrauben_d + blechdicke,
-          schrauben_d + blechdicke,
+    cube([schrauben_d + blechdicke/2,
+          schrauben_d + blechdicke/2,
           blechdicke + delta]);
 }
 
@@ -185,7 +186,7 @@ module schraubenhalterungen() {
         schraubenhalterung();
     translate([breite_innen -
                schrauben_d - blechdicke/2 - delta, 
-               blechdicke,
+               blechdicke * 1.15,
                hoehe_innen - blechdicke])
         schraubenhalterung();
 }
@@ -221,6 +222,8 @@ module deckel() {
     translate([-blechdicke - delta, 0, hoehe_innen])
         cube([breite_innen + 2 * blechdicke,
               tiefe_aussen, blechdicke + delta]);
+    translate([-delta, 0, hoehe_innen + 0.25])
+        phasenstange_x(breite_innen + 2*delta);
 }
 
 module seitenwand_oben_links() {
@@ -250,6 +253,45 @@ module seitenwand_oben_rechts() {
 }
 
 module front() {
+    breite_rechts = 60.0;
+    breite_links  = 10.0;
+    raste_laenge  =  5.0;
+    
+    // Linker Teil:
+    translate([-delta, 
+               tiefe_innen + blechdicke/2,
+               hoehe_innen - seite_oben_h + delta])
+        cube([breite_links + delta,
+              blechdicke/2, seite_oben_h + delta]);
+    translate([0.2, 
+               tiefe_innen + blechdicke/2,
+               -blechdicke + delta])
+        cube([breite_links + delta,
+              blechdicke/2,
+              hoehe_innen + blechdicke - 
+                  seite_oben_h + delta]);
+    
+    // Rechter Teil:
+    translate([breite_innen - breite_rechts + delta, 
+               tiefe_innen + blechdicke * 0.25,
+               hoehe_innen - seite_oben_h + delta])
+        cube([breite_rechts + delta,
+              blechdicke * 0.75, seite_oben_h + delta]);
+    translate([breite_innen - breite_rechts - 0.2, 
+               tiefe_innen + blechdicke * 0.25,
+               -blechdicke + delta])
+        cube([breite_rechts - 0.2,
+              blechdicke * 0.75,
+              hoehe_innen + blechdicke - 
+                  seite_oben_h + delta]);
+                  
+    // Raste:
+    translate([+0.2,
+               tiefe_innen - 
+               raste_laenge + 
+               blechdicke - delta, -fuss_hoehe])
+        cube([breite_innen - 0.4,
+              raste_laenge, 2.0]); 
 }
 
 module unterteil() {
@@ -300,5 +342,5 @@ module combined() {
 }
 
 //print_unten();
-combined();
-//oberteil();
+//combined();
+oberteil();
