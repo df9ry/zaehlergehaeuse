@@ -21,6 +21,8 @@ alu_dicke      =   1.0;
 seite_unten_d  =   5.0;
 seite_unten_h  =   6.0;
 seite_unten_t  =  75.0;
+seite_oben_h   =  hoehe_innen - seite_unten_h;
+seite_oben_t   =  seite_unten_t;
 stub_tiefe     =  75.0;
 stub_hoehe     =  seite_unten_h - 2.0;
 
@@ -163,20 +165,48 @@ module seitenwand_unten_rechts() {
 
 
 module loch(x, y) {
-    translate([x, y + blechdicke, - delta]) 
-        cylinder(h = hoehe_innen + 2*delta, 
-                 d = loch_d);
     translate([x, y + blechdicke, 
                - fuss_hoehe - blechdicke - delta]) 
-        cylinder(h = blechdicke + stub_hoehe,
+        cylinder(h = hoehe_innen + alu_dicke +
+                     stub_hoehe +
+                     2 * blechdicke + 2*delta,
                  d = schrauben_d);
+}
+
+module schraubenhalterung() {
+    cube([schrauben_d + blechdicke,
+          schrauben_d + blechdicke,
+          blechdicke + delta]);
+}
+
+module schraubenhalterungen() {
+    translate([-delta, blechdicke,
+               hoehe_innen - blechdicke])
+        schraubenhalterung();
+    translate([breite_innen -
+               schrauben_d - blechdicke/2 - delta, 
+               blechdicke,
+               hoehe_innen - blechdicke])
+        schraubenhalterung();
 }
 
 module loecher() {
     loch(l1_x, l1_y);
     loch(l2_x, l2_y);
-    loch(l3_x, l3_y);
-    loch(l4_x, l4_y);
+}
+
+module schraubenloch(x, y) {
+    translate([x, y + blechdicke, 
+               - fuss_hoehe - blechdicke - delta]) 
+        cylinder(h = hoehe_innen + alu_dicke +
+                     stub_hoehe +
+                     2 * blechdicke + 2*delta,
+                 d = loch_d);
+}
+
+module schraubenloecher() {
+    schraubenloch(l1_x, l1_y);
+    schraubenloch(l2_x, l2_y);
 }
 
 module boden() {
@@ -185,6 +215,41 @@ module boden() {
                -fuss_hoehe - blechdicke])
         cube([breite_innen + 2 * blechdicke,
               tiefe_aussen, blechdicke + delta]);
+}
+
+module deckel() {
+    translate([-blechdicke - delta, 0, hoehe_innen])
+        cube([breite_innen + 2 * blechdicke,
+              tiefe_aussen, blechdicke + delta]);
+}
+
+module seitenwand_oben_links() {
+    union() {
+        translate([-blechdicke, 0, seite_unten_h])
+            cube([blechdicke + delta,
+                  tiefe_aussen,
+                  seite_oben_h + delta]);
+        translate([-blechdicke, phasen_ende,
+              seite_unten_h])
+            phasenstange_y(tiefe_aussen - 
+                  2 * phasen_ende);
+    }
+}
+
+module seitenwand_oben_rechts() {
+    union() {
+        translate([breite_innen, 0, seite_unten_h])
+            cube([blechdicke + delta,
+                  tiefe_aussen,
+                  seite_oben_h + delta]);
+        translate([breite_innen, phasen_ende,
+              seite_unten_h])
+            phasenstange_y(tiefe_aussen - 
+                  2 * phasen_ende);
+    }
+}
+
+module front() {
 }
 
 module unterteil() {
@@ -200,6 +265,27 @@ module unterteil() {
     }
 }
 
+module oberteil() {
+    difference() {
+        union() {
+            difference() {
+                union() {
+                    deckel();
+                    seitenwand_oben_links();
+                    seitenwand_oben_rechts();
+                    front();
+                }
+                loecher();
+            }
+            schraubenhalterungen();
+        }
+        ;
+        {
+            schraubenloecher();
+        }
+    }
+}
+
 module print_unten() {
     translate([blechdicke + breite_innen, 
                fuss_hoehe + blechdicke, 0])
@@ -207,6 +293,12 @@ module print_unten() {
             unterteil();
 }
 
-//unterteil();
-print_unten();
+module combined() {
+    color("silver")
+        unterteil();
+    oberteil();
+}
 
+//print_unten();
+combined();
+//oberteil();
