@@ -44,6 +44,9 @@ l4_y           =  67.8;
 loch_d         =   4.0;
 schrauben_d    =   7.0;
 
+pcb_dicke      =   1.6;
+pcb_rand       =   0.5;
+
 module lattenarray(breite, tiefe, hoehe, n_latten) {
     dx = breite / (2 * n_latten - 1);
     for(n = [0 : n_latten-1]) {
@@ -311,6 +314,26 @@ module unterteil() {
     }
 }
 
+module display() {
+    cube([71.2 + 2 * pcb_rand, 
+          24.0 + 2 * pcb_rand, 7.0]);
+}
+
+module pcb() {
+    translate([7.0, 1.5 + blechdicke, 6.8 + alu_dicke])
+        union() {
+            translate([12.2, 3.6, 11.8 + pcb_dicke])
+                union() {
+                    cube([80.0, 36.0, pcb_dicke]);
+                    translate([4.7 - pcb_rand,
+                               6.5 - pcb_rand, 
+                               pcb_dicke])
+                        display();
+                }
+            cube([95.0, 65.0, pcb_dicke]);
+        }
+}
+
 module oberteil() {
     difference() {
         union() {
@@ -328,6 +351,7 @@ module oberteil() {
         ;
         {
             schraubenloecher();
+            pcb();
         }
     }
 }
@@ -360,8 +384,9 @@ module combined() {
     color("blue")   unterteil();
     color("red")    oberteil();
     color("silver") alu();
+    //color("green")  pcb();
 }
 
-//print_unten();
 combined();
-//oberteil();
+
+//print_unten();
