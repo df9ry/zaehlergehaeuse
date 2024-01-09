@@ -322,8 +322,8 @@ module display() {
 module schalter() {
     union() {
         cube([7.0, 13.3, 6.0]);
-        translate([-4.0, 7.0, 1.0])
-            cube([4.0, 3.0, 3.0]);
+        translate([-4.0, 7.37, 1.0])
+            cube([4.45, 3.74, 3.74]);
     }
 }
 
@@ -454,3 +454,4 @@ module combined() {
 
 //print_unten();
 print_schlitten();
+//schalter();
