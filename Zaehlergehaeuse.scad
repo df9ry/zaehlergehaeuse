@@ -322,8 +322,8 @@ module display() {
 module schalter() {
     union() {
         cube([7.0, 13.3, 6.0]);
-        translate([-4.0, 7.37, 1.0])
-            cube([4.45, 3.74, 3.74]);
+        translate([-4.0, 7.37, -9.0])
+            cube([4.45, 3.74, 15.0]);
     }
 }
 
@@ -336,13 +336,12 @@ module schlitten_ohne_ausschnitt() {
         cube([2 * blechdicke + delta,
               20.0, 17.0]);
     // Hebel:
-    translate([-blechdicke - 2.4, 
-               18.0, seite_unten_h + alu_dicke])
+    translate([-blechdicke - 5.4, 18.0, 6.5])
         union() {
-            cube([blechdicke + 3.0, 10.0, 10.0]);
-            translate([0.5, 0, 0])
+            cube([blechdicke + 6.0, 10.0, 11.5]);
+            translate([0.25, 0, 0.0])
                 rotate([0, 0, 90])
-                    lattenarray(10.0, 1.0, 10.0, 5);
+                    lattenarray(10.0, 1.0, 11.5, 5.0);
         }
 }
 
@@ -356,7 +355,7 @@ module schlitten() {
 module schlittenausschnitt() {
     translate([-blechdicke - 2.4, 
                14.0, seite_unten_h + alu_dicke - 4.0])
-        cube([blechdicke + 4.0, 14.0, 14.0]);
+        cube([blechdicke + 4.0, 14.0, 15.2]);
 }
 
 module pcb() {
@@ -454,4 +453,3 @@ module combined() {
 
 //print_unten();
 print_schlitten();
-//schalter();
