@@ -332,6 +332,23 @@ module oberteil() {
     }
 }
 
+module alu() {
+    translate([0, blechdicke, 0])
+        cube([breite_innen, 
+              tiefe_innen - blechdicke / 2, 
+              alu_dicke]);
+    translate([0, tiefe_innen + blechdicke / 2, 0])
+        cube([breite_innen, 
+              alu_dicke, 
+              24.0]);
+    translate([20.0, tiefe_innen, 12.0])
+        rotate([-90, 0, 0])
+            cylinder(h = 15.0, d = 9.0);    
+    translate([39.0, tiefe_innen, 12.0])
+        rotate([-90, 0, 0])
+            cylinder(h = 15.0, d = 9.0);    
+}
+
 module print_unten() {
     translate([blechdicke + breite_innen, 
                fuss_hoehe + blechdicke, 0])
@@ -340,11 +357,11 @@ module print_unten() {
 }
 
 module combined() {
-    color("silver")
-        unterteil();
-    oberteil();
+    color("blue")   unterteil();
+    color("red")    oberteil();
+    color("silver") alu();
 }
 
 //print_unten();
-//combined();
-oberteil();
+combined();
+//oberteil();
