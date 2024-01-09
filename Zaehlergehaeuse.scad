@@ -266,10 +266,16 @@ module front() {
     translate([0.2, 
                tiefe_innen + blechdicke/2,
                -blechdicke + delta])
-        cube([breite_links + delta,
+        cube([breite_links - 0.2,
               blechdicke/2,
               hoehe_innen + blechdicke - 
                   seite_oben_h + delta]);
+    translate([0.2,
+               tiefe_innen - 
+               raste_laenge + 
+               blechdicke - delta, -fuss_hoehe])
+        cube([breite_links - 0.2,
+              raste_laenge, 2.0]); 
     
     // Rechter Teil:
     translate([breite_innen - breite_rechts + delta, 
@@ -277,20 +283,18 @@ module front() {
                hoehe_innen - seite_oben_h + delta])
         cube([breite_rechts + delta,
               blechdicke * 0.75, seite_oben_h + delta]);
-    translate([breite_innen - breite_rechts - 0.2, 
+    translate([breite_innen - breite_rechts, 
                tiefe_innen + blechdicke * 0.25,
                -blechdicke + delta])
         cube([breite_rechts - 0.2,
               blechdicke * 0.75,
               hoehe_innen + blechdicke - 
                   seite_oben_h + delta]);
-                  
-    // Raste:
-    translate([+0.2,
+    translate([breite_innen - breite_rechts,
                tiefe_innen - 
                raste_laenge + 
                blechdicke - delta, -fuss_hoehe])
-        cube([breite_innen - 0.4,
+        cube([breite_rechts - 0.2,
               raste_laenge, 2.0]); 
 }
 
