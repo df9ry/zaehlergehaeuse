@@ -329,8 +329,8 @@ module schalter() {
 
 module schlitten_ohne_ausschnitt() {
     // Innere Platte:
-    translate([5.25, 13.0, -2.0])
-        cube([1.6, 20.0, hoehe_innen - 2.0]);
+    translate([5.25, 13.0, + alu_dicke + 0.2])
+        cube([1.6, 20.0, hoehe_innen - 5.2]);
     // Block:
     translate([0.5, 13.0, seite_unten_h - alu_dicke])
         cube([2 * blechdicke + delta,
@@ -437,7 +437,7 @@ module print_unten() {
 }
 
 module print_schlitten() {
-    translate([1.95, -13.1, 7.0])
+    translate([-1.2, -13.1, 7.0])
         rotate([0, 90, 0])
             schlitten();
 }
