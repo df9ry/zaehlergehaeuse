@@ -319,6 +319,46 @@ module display() {
           24.0 + 2 * pcb_rand, 7.0]);
 }
 
+module schalter() {
+    union() {
+        cube([7.0, 13.3, 6.0]);
+        translate([-4.0, 7.0, 1.0])
+            cube([4.0, 3.0, 3.0]);
+    }
+}
+
+module schlitten_ohne_ausschnitt() {
+    // Innere Platte:
+    translate([5.25, 13.0, -2.0])
+        cube([1.6, 20.0, hoehe_innen - 2.0]);
+    // Block:
+    translate([0.5, 13.0, seite_unten_h - alu_dicke])
+        cube([2 * blechdicke + delta,
+              20.0, 17.0]);
+    // Hebel:
+    translate([-blechdicke - 2.4, 
+               18.0, seite_unten_h + alu_dicke])
+        union() {
+            cube([blechdicke + 3.0, 10.0, 10.0]);
+            translate([0.5, 0, 0])
+                rotate([0, 0, 90])
+                    lattenarray(10.0, 1.0, 10.0, 5);
+        }
+}
+
+module schlitten() {
+    difference() {
+        schlitten_ohne_ausschnitt();
+        pcb();
+    };
+}
+
+module schlittenausschnitt() {
+    translate([-blechdicke - 2.4, 
+               14.0, seite_unten_h + alu_dicke - 4.0])
+        cube([blechdicke + 4.0, 14.0, 14.0]);
+}
+
 module pcb() {
     translate([7.0, 1.5 + blechdicke, 6.8 + alu_dicke])
         union() {
@@ -340,6 +380,9 @@ module pcb() {
             // OFFS Regler:
             translate([3.3, 43.0, pcb_dicke])
                 cylinder(h = 25.3, d = 3);
+            // Schalter:
+            translate([0, 10.0, pcb_dicke])
+                schalter();
         }
 }
 
@@ -361,8 +404,12 @@ module oberteil() {
         {
             schraubenloecher();
             pcb();
+            schlittenausschnitt();
         }
     }
+    // Schiene fuer Schlitten
+    translate([7.2, 8.0, hoehe_innen - 10.0 + delta])
+        cube([6.0, 25.0, 10.0]);
 }
 
 module alu() {
@@ -389,13 +436,21 @@ module print_unten() {
             unterteil();
 }
 
-module combined() {
-    color("blue")   unterteil();
-    //color("red")    oberteil();
-    color("silver") alu();
-    color("green")  pcb();
+module print_schlitten() {
+    translate([1.95, -13.1, 7.0])
+        rotate([0, 90, 0])
+            schlitten();
 }
 
-combined();
+module combined() {
+    color("blue")   unterteil();
+    color("red")    oberteil();
+    color("silver") alu();
+    color("green")  pcb();
+    color("white")  schlitten();
+}
+
+//combined();
 
 //print_unten();
+print_schlitten();
