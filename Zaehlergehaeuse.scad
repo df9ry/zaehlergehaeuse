@@ -331,6 +331,15 @@ module pcb() {
                         display();
                 }
             cube([95.0, 65.0, pcb_dicke]);
+            // AMPL Regler:
+            translate([14.3, 50.5, pcb_dicke])
+                cylinder(h = 25.3, d = 7);
+            // ADJ Regler:
+            translate([60.3, 52.0, pcb_dicke])
+                cylinder(h = 25.3, d = 12);
+            // OFFS Regler:
+            translate([3.3, 43.0, pcb_dicke])
+                cylinder(h = 25.3, d = 3);
         }
 }
 
@@ -382,9 +391,9 @@ module print_unten() {
 
 module combined() {
     color("blue")   unterteil();
-    color("red")    oberteil();
+    //color("red")    oberteil();
     color("silver") alu();
-    //color("green")  pcb();
+    color("green")  pcb();
 }
 
 combined();
