@@ -432,9 +432,14 @@ module oberteil() {
             schlittenausschnitt();
         }
     }
-    // Schiene fuer Schlitten
+    // Schiene fuer Schlitten:
     translate([7.2, 8.0, hoehe_innen - 10.0 + delta])
         cube([6.0, 25.0, 10.0]);
+    // Kreuz fuer Taster:
+    translate([80.3, 54.65, hoehe_innen - 4.0 + delta])
+        cube([9.0, 1.6, 4.0]);
+    translate([83.9, 51.25, hoehe_innen - 4.0 + delta])
+        cube([1.6, 9.0, 4.0]);
 }
 
 module alu() {
@@ -516,7 +521,7 @@ module combined() {
     //color("silver") alu();
     //color("green")  pcb();
     //color("white")  schlitten();
-    color("white")  d_k_fuehrung();
+    //color("white")  d_k_fuehrung();
 }
 
 combined();
