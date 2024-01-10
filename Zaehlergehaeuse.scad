@@ -197,6 +197,8 @@ module schraubenhalterungen() {
 module loecher() {
     loch(l1_x, l1_y);
     loch(l2_x, l2_y);
+    loch(l3_x, l3_y);
+    loch(l4_x, l4_y);
 }
 
 module schraubenloch(x, y) {
@@ -382,6 +384,15 @@ module pcb() {
             // Schalter:
             translate([0, 10.0, pcb_dicke])
                 schalter();
+            // Tasten:
+            translate([72.5, 56.0, pcb_dicke])
+                cylinder(h = 25.3, d = 4);
+            translate([72.5, 46.0, pcb_dicke])
+                cylinder(h = 25.3, d = 4);
+            translate([82.5, 56.0, pcb_dicke])
+                cylinder(h = 25.3, d = 4);
+            translate([82.5, 46.0, pcb_dicke])
+                cylinder(h = 25.3, d = 4);
         }
 }
 
@@ -428,6 +439,49 @@ module alu() {
             cylinder(h = 15.0, d = 9.0);    
 }
 
+module print_d_k_fuehrung() {
+    xy = 20.0;
+    h  = 16.4;
+    d0 =  6.5;
+    d1 =  (xy - 2 * d0) / 4;
+    d2 = d1 + 10.0;
+    // Gap:
+    gb =  2.0;
+    gl = 10.0;
+    difference() {
+        cube([xy, xy, h]);
+        union() {
+            // Führungskanaele:
+            translate([d1, d1, -delta])
+                cube([d0, d0, h + 2*delta]);
+            translate([d1, d2, -delta])
+                cube([d0, d0, h + 2*delta]);
+            translate([d2, d1, -delta])
+                cube([d0, d0, h + 2*delta]);
+            translate([d2, d2, -delta])
+                cube([d0, d0, h + 2*delta]);
+            // Schraubenaussparung:
+            translate([-delta, -delta, -delta])
+                cube([3.0, 6.0, 2.5]);
+            // Gap vertikal:
+            translate([xy / 2 - gb / 2,
+                       (xy - gl) / 2,
+                       -delta])
+                cube([gb, gl, xy + 2*delta]);
+            // Gap horizontal:
+            translate([(xy - gl) / 2,
+                       xy / 2 - gb / 2,
+                       -delta])
+                cube([gl, gb, xy + 2*delta]);
+        }
+    };
+}
+
+module d_k_fuehrung() {
+    translate([74.7, 45.5, 9.5])
+        print_d_k_fuehrung();
+}
+
 module print_unten() {
     translate([blechdicke + breite_innen, 
                fuss_hoehe + blechdicke, 0])
@@ -442,14 +496,16 @@ module print_schlitten() {
 }
 
 module combined() {
-    color("blue")   unterteil();
+    //color("blue")   unterteil();
     color("red")    oberteil();
-    color("silver") alu();
-    color("green")  pcb();
-    color("white")  schlitten();
+    //color("silver") alu();
+    //color("green")  pcb();
+    //color("white")  schlitten();
+    color("white")  d_k_fuehrung();
 }
 
-//combined();
+combined();
 
 //print_unten();
-print_schlitten();
+//print_schlitten();
+//print_d_k_fuehrung();
