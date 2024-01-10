@@ -184,12 +184,25 @@ module schraubenhalterung() {
 }
 
 module schraubenhalterungen() {
-    translate([-delta, blechdicke,
+    translate([-blechdicke/2,
+               blechdicke,
                hoehe_innen - blechdicke])
         schraubenhalterung();
+    
+    translate([-blechdicke/2,
+               tiefe_innen - 12.5,
+               hoehe_innen - blechdicke])
+        schraubenhalterung();
+    
     translate([breite_innen -
-               schrauben_d - blechdicke/2 - delta, 
+               schrauben_d - delta, 
                blechdicke * 1.15,
+               hoehe_innen - blechdicke])
+        schraubenhalterung();
+    
+    translate([breite_innen -
+               schrauben_d - delta, 
+               tiefe_innen - 13.5,
                hoehe_innen - blechdicke])
         schraubenhalterung();
 }
@@ -213,6 +226,8 @@ module schraubenloch(x, y) {
 module schraubenloecher() {
     schraubenloch(l1_x, l1_y);
     schraubenloch(l2_x, l2_y);
+    schraubenloch(l3_x, l3_y);
+    schraubenloch(l4_x, l4_y);
 }
 
 module boden() {
@@ -260,7 +275,7 @@ module seitenwand_oben_rechts() {
 module front() {
     breite_rechts = 60.0;
     breite_links  = 10.0;
-    raste_laenge  =  5.0;
+    raste_laenge  =  3.0;
     
     // Linker Teil:
     translate([-delta, 
