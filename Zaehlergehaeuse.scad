@@ -1,4 +1,7 @@
 
+use <ttf/Roddenberry-DgLm.ttf>
+use <ttf/RoddenberryItalic-VYz6.ttf>
+use <ttf/RoddenberryBold-AgG2.ttf>
 use <ttf/RoddenberryBoldItalic-q4ol.ttf>
 
 // Resolution for milling:
@@ -476,8 +479,9 @@ module oberteil() {
                        hoehe_innen + blechdicke - 0.5])
                 rotate([0, 0, 180])
                     linear_extrude(height = 1.0)
-                        text(text = "DF9RY", size = 10,
-                        font = "Roddenberry");
+                        text(
+            text = "DF9RY", size = 10,
+            font = "Roddenberry:style=Bold Italic");
 
             // Beschriftung Front:
             translate([10.0, // Pfeil Output 
@@ -539,7 +543,7 @@ module alu() {
             cylinder(h = 15.0, d = 9.0);    
 }
 
-module print_d_k_fuehrung() {
+module d_k_fuehrung_base() {
     xy = 20.0;
     h  = 16.4;
     d0 =  6.5;
@@ -548,6 +552,9 @@ module print_d_k_fuehrung() {
     // Gap:
     gb =  2.0;
     gl = 10.0;
+    uu =  1.0; // Unsicherheit unten
+    uh =  5.0;
+    
     difference() {
         cube([xy, xy, h]);
         union() {
@@ -560,6 +567,13 @@ module print_d_k_fuehrung() {
                 cube([d0, d0, h + 2*delta]);
             translate([d2, d2, -delta])
                 cube([d0, d0, h + 2*delta]);
+
+            // Unsicherheit unten:
+            translate([d1-uu, d1-uu, -delta])
+                cube([xy - 1.5 * uu, 
+                      xy - 1.5 * uu,
+                      uh + delta]);
+            
             // Schraubenaussparung:
             translate([-delta, -delta, -delta])
                 cube([3.0, 6.0, 2.5]);
@@ -579,7 +593,7 @@ module print_d_k_fuehrung() {
 
 module d_k_fuehrung() {
     translate([74.7, 45.5, 9.5])
-        print_d_k_fuehrung();
+        d_k_fuehrung_base();
 }
 
 module print_unten() {
@@ -635,20 +649,86 @@ module taster() {
     }
 }
 
-module combined() {
-    //color("blue")   unterteil();
-    color("red")    oberteil();
-    //color("silver") alu();
-    //color("green")  pcb();
-    //color("white")  schlitten();
-    //color("white")  d_k_fuehrung();
-    //color("lime")   taster();
+// Knopf
+a_step         =  1; // Resolution for circle
+knob_radius    =  6.50;
+knob_height    = 11.00;
+knob_scale     =  0.90;
+knob_fluting   =  0.50;
+n_flutes       = 10;
+
+function f_x(x, a) = x + cos(a) 
+                     * (knob_fluting * cos(a*n_flutes));
+
+function f_y(x, a) = x + sin(a) 
+                     * (knob_fluting * cos(a*n_flutes));
+
+module _knob_shape(order = 360 / a_step, r = knob_radius)
+{
+    angles=[ for (i = [0:order-1]) i*(360/order) ];
+    coords=[ for (th=angles) [
+        f_x(r*cos(th), th), 
+        f_y(r*sin(th), th)
+    ]];
+    polygon(coords);
 }
 
-combined();
+module _knob()
+{
+    linear_extrude(height = knob_height, 
+                    scale = knob_scale)
+    {
+        _knob_shape();
+    };
+}
+
+module print_knob() {
+    welle_innen  =  6.25;
+    welle_aussen = 10.00;
+    welle_h      = 12.00;
+
+    // Welle:
+    difference() {
+        cylinder(d = welle_aussen, h = welle_h);
+        translate([0, 0, -delta])
+            cylinder(d = welle_innen,
+                     h = welle_h + 2*delta);
+    }
+    // Knopf:
+    translate([0, 0, welle_h - delta])
+        _knob();
+    translate([0, 0, welle_h + knob_height])
+        scale([knob_scale, knob_scale, 0.2])
+            sphere(r = knob_radius - knob_fluting);
+}
+
+module print_d_k_fuehrung() {
+    translate([0, 20.0, 16.4])
+        rotate([180, 0, 0])
+            d_k_fuehrung_base();
+}
+
+module knob() {
+    translate([67.4, 56.7, 17.0])
+        print_knob();
+}
+
+module combined() {
+    color("blue")   unterteil();
+    color("red")    oberteil();
+    color("silver") alu();
+    color("green")  pcb();
+    color("white")  schlitten();
+    color("white")  d_k_fuehrung();
+    color("lime")   taster();
+    color("lime")   knob();
+}
+
+//combined();
 
 //print_unten();
 //print_oben();
 //print_schlitten();
-//print_d_k_fuehrung();
+print_d_k_fuehrung();
 //print_taster();
+//print_knob();
