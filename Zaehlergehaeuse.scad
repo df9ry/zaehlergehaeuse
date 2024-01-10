@@ -1,3 +1,6 @@
+
+use <ttf/RoddenberryBoldItalic-q4ol.ttf>
+
 // Resolution for milling:
 $fa            = 1;    // Minimum angle
 $fs            = 0.1;  // Minimum size
@@ -376,6 +379,8 @@ module schlittenausschnitt() {
 }
 
 module pcb() {
+    h = 20.0;
+    
     translate([7.0, 1.5 + blechdicke, 6.8 + alu_dicke])
         union() {
             translate([12.2, 3.6, 11.8 + pcb_dicke])
@@ -389,25 +394,25 @@ module pcb() {
             cube([95.0, 65.0, pcb_dicke]);
             // AMPL Regler:
             translate([14.3, 50.5, pcb_dicke])
-                cylinder(h = 25.3, d = 7);
+                cylinder(h = h, d = 7);
             // ADJ Regler:
             translate([60.3, 52.0, pcb_dicke])
-                cylinder(h = 25.3, d = 12);
+                cylinder(h = h, d = 12);
             // OFFS Regler:
             translate([3.3, 43.0, pcb_dicke])
-                cylinder(h = 25.3, d = 3);
+                cylinder(h = h, d = 3);
             // Schalter:
             translate([0, 10.0, pcb_dicke])
                 schalter();
             // Tasten:
             translate([72.5, 56.0, pcb_dicke])
-                cylinder(h = 25.3, d = 4);
+                cylinder(h = h, d = 4);
             translate([72.5, 46.0, pcb_dicke])
-                cylinder(h = 25.3, d = 4);
+                cylinder(h = h, d = 4);
             translate([82.5, 56.0, pcb_dicke])
-                cylinder(h = 25.3, d = 4);
+                cylinder(h = h, d = 4);
             translate([82.5, 46.0, pcb_dicke])
-                cylinder(h = 25.3, d = 4);
+                cylinder(h = h, d = 4);
         }
 }
 
@@ -430,6 +435,81 @@ module oberteil() {
             schraubenloecher();
             pcb();
             schlittenausschnitt();
+            // Beschriftung:
+            translate([94.4, 57.5,
+                       hoehe_innen + blechdicke - 0.5])
+                rotate([0, 0, 180])
+                    linear_extrude(height = 1.0)
+                        text(text = "Select", size = 2.5);
+            translate([82.0, 57.5,
+                       hoehe_innen + blechdicke - 0.5])
+                rotate([0, 0, 180])
+                    linear_extrude(height = 1.0)
+                        text(text = "OK", size = 2.5);
+            translate([82.5, 47.0, // Pfeil nach rechts
+                       hoehe_innen + blechdicke - 0.5])
+                rotate([0, 0, 180])
+                    linear_extrude(height = 1.0)
+                        text(text = "\u25BA", size = 4.6);
+            translate([86.5, 43.3, // Pfeil nach links
+                       hoehe_innen + blechdicke - 0.5])
+                rotate([0, 0, 0])
+                    linear_extrude(height = 1.0)
+                        text(text = "\u25BA", size = 4.6);
+            translate([70.1, 70.0,
+                       hoehe_innen + blechdicke - 0.5])
+                rotate([0, 0, 180])
+                    linear_extrude(height = 1.0)
+                        text(text = "ADJ", size = 2.5);
+            translate([25.0, 63.0,
+                       hoehe_innen + blechdicke - 0.5])
+                rotate([0, 0, 180])
+                    linear_extrude(height = 1.0)
+                        text(text = "AMPL", size = 2.5);
+            translate([15.0, 53.0,
+                       hoehe_innen + blechdicke - 0.5])
+                rotate([0, 0, 180])
+                    linear_extrude(height = 1.0)
+                        text(text = "OFFS", size = 2.5);
+
+            translate([38.0, 78.0,
+                       hoehe_innen + blechdicke - 0.5])
+                rotate([0, 0, 180])
+                    linear_extrude(height = 1.0)
+                        text(text = "DF9RY", size = 10,
+                        font = "Roddenberry");
+
+            // Beschriftung Front:
+            translate([10.0, // Pfeil Output 
+                       tiefe_innen + blechdicke - 0.8,
+                       10.0])
+                rotate([90, 0, 180])
+                    linear_extrude(height = 1.0)
+                        text(text = "\u25BA", size = 8);
+            translate([108.0, 
+                       tiefe_innen + blechdicke - 0.8,
+                       12.0])
+                rotate([90, 0, 180])
+                    linear_extrude(height = 1.0)
+                        text(
+                text = "Counter 60MHz - 0.5Vp-p~20Vp-p", 
+                size = 2.5);
+            translate([108.0, 
+                       tiefe_innen + blechdicke - 0.8,
+                       21])
+                rotate([90, 0, 180])
+                    linear_extrude(height = 1.0)
+                        text(
+                text = "UDB1005S DDS Signal Generator",
+                size = 2.5);
+            translate([108.0, 
+                       tiefe_innen + blechdicke - 0.8,
+                       17])
+                rotate([90, 0, 180])
+                    linear_extrude(height = 1.0)
+                        text(
+                text = "Output 0.01Hz~5MHz 9Vp-p",
+                size = 2.5);
         }
     }
     // Schiene fuer Schlitten:
@@ -509,10 +589,50 @@ module print_unten() {
             unterteil();
 }
 
+module print_oben() {
+    translate([blechdicke, 
+               tiefe_innen + blechdicke,
+               fuss_hoehe + hoehe_innen])
+        rotate([180, 0, 0])
+            oberteil();
+}
+
 module print_schlitten() {
     translate([-1.2, -13.1, 7.0])
         rotate([0, 90, 0])
             schlitten();
+}
+
+module print_taster() {
+    hub =  1.0;
+    z0  =  5.0;
+    z1  = z0 - hub;
+    d   =  3.75;
+    h   = 16.0;
+    h1  = 11.0;
+    xy  =  6.0;
+    
+    translate([0, 0, z0])
+        cylinder(h = h, d = d);
+    translate([0, 0, z0 + h])
+        scale([1.0, 1.0, 0.5])
+            sphere(d = d);
+    translate([-xy / 2, -xy / 2, z0])
+        cube([xy, xy, h1]);
+}
+
+module taster() {
+    translate([74.7, 45.5, 9.5])
+    union() {
+        translate([ 5.0,  5.0, 0])
+            print_taster();
+        translate([15.0, 15.0, 0])
+            print_taster();
+        translate([15.0,  5.0, 0])
+            print_taster();
+        translate([ 5.0, 15.0, 0])
+            print_taster();
+    }
 }
 
 module combined() {
@@ -522,10 +642,13 @@ module combined() {
     //color("green")  pcb();
     //color("white")  schlitten();
     //color("white")  d_k_fuehrung();
+    //color("lime")   taster();
 }
 
 combined();
 
 //print_unten();
+//print_oben();
 //print_schlitten();
 //print_d_k_fuehrung();
+//print_taster();
